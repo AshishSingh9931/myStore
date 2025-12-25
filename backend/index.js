@@ -10,10 +10,14 @@ import orderRoutes from "./routes/orders.js";
 dotenv.config();
 const app = express();
 
-app.use(cors());
+// ✅ MIDDLEWARE
+app.use(cors({
+  origin: "*",          // allow all for now
+  credentials: true
+}));
 app.use(express.json());
 
-// Routes
+// ✅ ROUTES
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
@@ -22,13 +26,16 @@ app.get("/", (req, res) => {
   res.send("API is running...");
 });
 
-// Database connect
+// ✅ PORT FIX
+const PORT = process.env.PORT || 5000;
+
+// ✅ DB CONNECT
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
     console.log("MongoDB Connected");
-    app.listen(process.env.PORT, () =>
-      console.log(`Server running on port ${process.env.PORT}`)
+    app.listen(PORT, () =>
+      console.log(`Server running on port ${PORT}`)
     );
   })
   .catch((err) => console.log("DB Error: ", err));
