@@ -1,14 +1,46 @@
-import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useLocation, useParams } from "react-router-dom";
+import API from "../api"; // your API file
 
 export default function OrderSummary() {
   const location = useLocation();
-  const order = location.state;
+  const params = useParams(); // optional if using /order/:id route
+  const [order, setOrder] = useState(location.state || null);
+  const [loading, setLoading] = useState(!order);
+  const [error, setError] = useState("");
 
-  if (!order) {
+  useEffect(() => {
+    // If order already exists in state, no need to fetch
+    if (order) return;
+
+    const fetchOrder = async () => {
+      try {
+        const orderId = params.id; // get ID from route if using /order/:id
+        const res = await API.get(`/api/orders/${orderId}`);
+        setOrder(res.data);
+        setLoading(false);
+      } catch (err) {
+        console.log(err.response?.data || err.message);
+        setError("Failed to load order.");
+        setLoading(false);
+      }
+    };
+
+    fetchOrder();
+  }, [order, params.id]);
+
+  if (loading) {
     return (
       <div className="text-center text-xl mt-20 text-gray-600">
-        No order found.
+        Loading order...
+      </div>
+    );
+  }
+
+  if (error || !order) {
+    return (
+      <div className="text-center text-xl mt-20 text-gray-600">
+        {error || "No order found."}
         <br />
         <Link to="/" className="text-blue-600 underline">
           Go Home
@@ -19,22 +51,20 @@ export default function OrderSummary() {
 
   return (
     <div className="max-w-2xl mx-auto bg-white shadow-md rounded-2xl p-8 mt-10">
-
       <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
         Order Summary
       </h1>
 
       <div className="space-y-2 mb-6">
-        <p><strong>Order ID:</strong> {order.orderId}</p>
+        <p><strong>Order ID:</strong> {order._id}</p>
         <p><strong>Name:</strong> {order.name}</p>
         <p><strong>Email:</strong> {order.email}</p>
-        <p><strong>Date:</strong> {order.date}</p>
+        <p><strong>Date:</strong> {new Date(order.createdAt).toLocaleString()}</p>
       </div>
 
       <hr className="my-4" />
 
       <h2 className="text-xl font-semibold mb-4">Purchased Items</h2>
-
       <div className="space-y-4">
         {order.items.map((item) => (
           <div
@@ -68,7 +98,6 @@ export default function OrderSummary() {
           Back Home
         </Link>
       </div>
-
     </div>
   );
 }
