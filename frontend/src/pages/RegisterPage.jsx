@@ -70,4 +70,26 @@ export default function RegisterPage() {
           <label className="text-gray-700">Password</label>
           <input
             type="password"
-            cl
+            className="w-full p-3 border rounded-xl focus:ring-2 focus:ring-blue-500"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+
+        <button
+          className="w-full bg-green-600 text-white py-3 rounded-xl hover:bg-green-700 transition text-lg"
+        >
+          Create Account
+        </button>
+      </form>
+
+      <p className="text-center mt-5 text-gray-600">
+        Already have an account?
+        <Link to="/login" className="text-blue-600 ml-2 hover:underline">
+          Login
+        </Link>
+      </p>
+    </div>
+  );
+}
