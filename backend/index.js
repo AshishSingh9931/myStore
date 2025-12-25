@@ -12,7 +12,7 @@ const app = express();
 
 // ✅ MIDDLEWARE
 app.use(cors({
-  origin: "*",          // allow all for now
+  origin: "https://my-store-ten-xi.vercel.app",          // allow all for now
   credentials: true
 }));
 app.use(express.json());
@@ -39,3 +39,4 @@ mongoose
     );
   })
   .catch((err) => console.log("DB Error: ", err));
+
