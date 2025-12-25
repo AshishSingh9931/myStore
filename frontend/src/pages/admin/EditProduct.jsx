@@ -1,0 +1,113 @@
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+
+export default function EditProduct() {
+  const { id } = useParams();
+  const [form, setForm] = useState({});
+
+  useEffect(() => {
+    fetch(`http://localhost:5000/api/products/${id}`)
+      .then(res => res.json())
+      .then(data => setForm(data));
+  }, [id]);
+
+  function handleChange(e) {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault();
+
+    fetch(`http://localhost:5000/api/products/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form),
+    })
+      .then(res => res.json())
+      .then(() => {
+        alert("Product Updated!");
+        window.location.href = "/admin/products";
+      });
+  }
+
+  return (
+    <div className="max-w-2xl mx-auto bg-white p-8 rounded-2xl shadow-md">
+
+      <h1 className="text-3xl font-bold mb-6 text-gray-800">
+        Edit Product
+      </h1>
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+
+        <div>
+          <label className="block text-gray-700 font-semibold mb-1">
+            Product Title
+          </label>
+          <input
+            name="title"
+            value={form.title || ""}
+            onChange={handleChange}
+            className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+          />
+        </div>
+
+        <div>
+          <label className="block text-gray-700 font-semibold mb-1">
+            Price ($)
+          </label>
+          <input
+            name="price"
+            type="number"
+            value={form.price || ""}
+            onChange={handleChange}
+            className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+          />
+        </div>
+
+        <div>
+          <label className="block text-gray-700 font-semibold mb-1">
+            Category
+          </label>
+          <input
+            name="category"
+            value={form.category || ""}
+            onChange={handleChange}
+            className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+          />
+        </div>
+
+        <div>
+          <label className="block text-gray-700 font-semibold mb-1">
+            Image URL
+          </label>
+          <input
+            name="image"
+            value={form.image || ""}
+            onChange={handleChange}
+            className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+          />
+        </div>
+
+        <div>
+          <label className="block text-gray-700 font-semibold mb-1">
+            Description
+          </label>
+          <textarea
+            name="description"
+            value={form.description || ""}
+            onChange={handleChange}
+            rows={4}
+            className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+          ></textarea>
+        </div>
+
+        <button
+          className="w-full bg-blue-600 text-white py-3 rounded-lg text-lg font-semibold hover:bg-blue-700 transition"
+        >
+          Update Product
+        </button>
+
+      </form>
+    </div>
+  );
+}
