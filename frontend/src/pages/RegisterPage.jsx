@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import API from "../api"; // create api.js in src folder
 
 export default function RegisterPage() {
   const [fullName, setFullName] = useState("");
@@ -14,24 +15,19 @@ export default function RegisterPage() {
     setError("");
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fullName, email, password }),
+      // Use API from api.js instead of fetch localhost
+      const res = await API.post("/api/auth/register", {
+        fullName,
+        email,
+        password,
       });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.message || "Registration failed");
-        return;
-      }
-
+      console.log(res.data); // optional: see backend response
       alert("Registration Successful!");
       navigate("/login");
-
     } catch (err) {
-      setError("Something went wrong!");
+      console.log(err.response?.data || err.message);
+      setError(err.response?.data?.message || "Something went wrong!");
     }
   }
 
@@ -48,7 +44,6 @@ export default function RegisterPage() {
       )}
 
       <form onSubmit={handleRegister} className="space-y-5">
-
         <div>
           <label className="text-gray-700">Full Name</label>
           <input
@@ -75,26 +70,4 @@ export default function RegisterPage() {
           <label className="text-gray-700">Password</label>
           <input
             type="password"
-            className="w-full p-3 border rounded-xl focus:ring-2 focus:ring-blue-500"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-
-        <button
-          className="w-full bg-green-600 text-white py-3 rounded-xl hover:bg-green-700 transition text-lg"
-        >
-          Create Account
-        </button>
-      </form>
-
-      <p className="text-center mt-5 text-gray-600">
-        Already have an account?
-        <Link to="/login" className="text-blue-600 ml-2 hover:underline">
-          Login
-        </Link>
-      </p>
-    </div>
-  );
-}
+            cl
